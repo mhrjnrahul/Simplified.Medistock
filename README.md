@@ -5,12 +5,6 @@ A full-featured pharmacy inventory management system built with ASP.NET Core 8 M
 
 ---
 
-## Screenshots
-
-> Dashboard, Sales, Products, and Stock Adjustments modules
-
----
-
 ## Features
 
 - **Dashboard** — Real-time overview of sales, revenue, low stock alerts, expiring products, and quick actions
