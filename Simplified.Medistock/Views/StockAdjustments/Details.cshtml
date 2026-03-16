@@ -1,0 +1,67 @@
+﻿@model Simplified.Medistock.Models.ViewModels.StockAdjustmentViewModel
+
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Adjustment Details</h1>
+    </div>
+    <div>
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="ms-card w-full h-full">
+    <div class="ms-card-header">
+        <h2 class="ms-card-title">
+            Adjustments for @Model.ProductName
+        </h2>
+    </div>
+
+    <div class="ms-card-body">
+        <table style="width:100%;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:160px;">Product</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.ProductName</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Date</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.AdjustmentDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Type</td>
+                <td style="padding:12px 0;">
+                    @if (Model.AdjustmentType == Simplified.Medistock.Models.Enums.AdjustmentType.Addition)
+                    {
+                        <span class="ms-badge ms-badge-success">Addition</span>
+                    }
+                    else
+                    {
+                        <span class="ms-badge ms-badge-danger">Reduction</span>
+                    }
+                </td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Quantity Before</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.QuantityBefore</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Adjusted</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.QuantityAdjusted</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Quantity After</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.QuantityAfter</td>
+            </tr>
+            <tr>
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Reason</td>
+                <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.Reason ?? "—")</td>
+            </tr>
+        </table>
+    </div>
+</div>

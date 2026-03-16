@@ -1,0 +1,71 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CreateStockAdjustmentViewModel
+
+@{
+    ViewData["Title"] = "New Stock Adjustment";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Adjusting Stock</h1>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div style="max-width:600px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="ms-form-section">
+            <p class="ms-form-section-title">Stock Adjustment Details</p>
+
+            <div asp-validation-summary="ModelOnly"
+                 class="ms-alert ms-alert-danger"
+                 style="display:@(ViewData.ModelState.IsValid ? "none" : "block")">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="ProductId" class="ms-label">
+                    Product <span style="color:var(--danger-text)">*</span>
+                </label>
+                <select asp-for="ProductId" asp-items="ViewBag.Products" class="ms-input">
+                    <option value="">-- Select Product --</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Quantity" class="ms-label">
+                    Quantity <span style="color:var(--danger-text)">*</span>
+                </label>
+                <input asp-for="Quantity" class="ms-input" placeholder="e.g. 10" />
+                <span asp-validation-for="Quantity" style="font-size:12px;color:var(--danger-text);"></span>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="AdjustmentType" class="ms-label">
+                    Adjustment Type <span style="color:var(--danger-text)">*</span>
+                </label>
+                <select asp-for="AdjustmentType" class="ms-input" placeholder="e.g. John" asp-items="ViewBag.AdjustmentTypes">
+                    <option value="value">Select the Adjustment Type</option>
+                </select>
+                <span asp-validation-for="AdjustmentType" style="font-size:12px;color:var(--danger-text);"></span>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Reason" class="ms-label">
+                    Reason 
+                </label>
+                <input asp-for="Reason" class="ms-input" placeholder="e.g. Replenishing the stock" />
+                <span asp-validation-for="Reason" style="font-size:12px;color:var(--danger-text);"></span>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+            <button type="submit" class="ms-btn ms-btn-primary">
+                <i class="bi bi-check-lg"></i> Save Adjustments
+            </button>
+            <a asp-action="Index" class="ms-btn ms-btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

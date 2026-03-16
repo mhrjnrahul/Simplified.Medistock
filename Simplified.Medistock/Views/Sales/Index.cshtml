@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.SalesViewModel>
+@{
+    ViewData["Title"] = "Sales";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Sales</h1>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> New Sale
+    </a>
+</div>
+
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>Sale Number</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Grand Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="text-align:center;color:var(--slate-400);padding:48px;">
+                        <i class="bi bi-receipt" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No sales found. Create one.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var sale in Model)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@sale.SaleNumber</div></td>
+                        <td class="ms-cell-meta">@sale.SaleDate.ToString("MMM dd, yyyy")</td>
+                        <td style="color:var(--slate-500)">@sale.CustomerName</td>
+                        <td class="ms-cell-meta">@sale.PaymentMethod</td>
+                        <td style="font-weight:600;color:var(--slate-800);">Rs. @sale.GrandTotal.ToString("N2")</td>
+                        <td>
+                            @if (sale.Status == Simplified.Medistock.Models.Enums.SaleStatus.Completed)
+                            {
+                                <span class="ms-badge ms-badge-success">Completed</span>
+                            }
+                            else if (sale.Status == Simplified.Medistock.Models.Enums.SaleStatus.Pending)
+                            {
+                                <span class="ms-badge ms-badge-warning">Pending</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-danger">Cancelled</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@sale.Id"
+                               class="ms-btn ms-btn-secondary ms-btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

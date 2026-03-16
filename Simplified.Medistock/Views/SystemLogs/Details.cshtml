@@ -1,0 +1,38 @@
+﻿<div class="ms-card-body">
+    <table style="width:100%;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid var(--slate-100);">
+            <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:160px;">Timestamp</td>
+            <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.Timestamp.ToString("MMM dd, yyyy hh:mm tt")</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--slate-100);">
+            <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Controller</td>
+            <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.Controller ?? "—")</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--slate-100);">
+            <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Action</td>
+            <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.Action ?? "—")</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--slate-100);">
+            <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">User ID</td>
+            <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.UserId ?? "—")</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--slate-100);">
+            <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">IP Address</td>
+            <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.IpAddress ?? "—")</td>
+        </tr>
+        @if (!string.IsNullOrEmpty(Model.Exception))
+        {
+            <tr style="border-bottom:1px solid var(--slate-100);">
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Exception</td>
+                <td style="padding:12px 0;font-size:14px;color:#dc2626;white-space:pre-wrap;">@Model.Exception</td>
+            </tr>
+        }
+        @if (!string.IsNullOrEmpty(Model.StackTrace))
+        {
+            <tr>
+                <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Stack Trace</td>
+                <td style="padding:12px 0;font-size:12px;color:var(--slate-600);white-space:pre-wrap;font-family:monospace;">@Model.StackTrace</td>
+            </tr>
+        }
+    </table>
+</div>

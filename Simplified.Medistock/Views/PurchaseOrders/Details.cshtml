@@ -1,0 +1,139 @@
+﻿@model Simplified.Medistock.Models.ViewModels.PurchaseOrderViewModel
+@{
+    ViewData["Title"] = "Purchase Order Details";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">@Model.PONumber</h1>
+        <p class="ms-page-subtitle">@Model.OrderDate.ToString("MMM dd, yyyy")</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+        @if (Model.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.Draft)
+        {
+            <form asp-action="Receive" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="ms-btn ms-btn-primary">
+                    <i class="bi bi-check-lg"></i> Mark as Received
+                </button>
+            </form>
+        }
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+    <!-- PO Info -->
+    <div class="ms-card">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">Order Info</h2>
+            @if (Model.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.Draft)
+            {
+                <span class="ms-badge ms-badge-warning">Pending</span>
+            }
+            else if (Model.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.FullyReceived)
+            {
+                <span class="ms-badge ms-badge-success">Received</span>
+            }
+            else if (Model.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.Cancelled)
+            {
+                <span class="ms-badge ms-badge-danger">Cancelled</span>
+            }
+            else
+            {
+                <span class="ms-badge ms-badge-muted">Draft</span>
+            }
+        </div>
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:160px;">Supplier</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.SupplierName</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Order Date</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.OrderDate.ToString("MMM dd, yyyy")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Expected Delivery</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.ExpectedDeliveryDate?.ToString("MMM dd, yyyy") ?? "—")</td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <tr>
+                        <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Notes</td>
+                        <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.Notes</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="ms-card">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">Summary</h2>
+        </div>
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Total Items</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);text-align:right;">@Model.Items.Count</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Total Ordered</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);text-align:right;">@Model.Items.Sum(i => i.OrderedQuantity) units</td>
+                </tr>
+                <tr>
+                    <td style="padding:12px 0;font-size:14px;font-weight:700;color:var(--slate-800);">Total Amount</td>
+                    <td style="padding:12px 0;font-size:18px;font-weight:700;color:var(--primary);text-align:right;">Rs. @Model.TotalAmount.ToString("N2")</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Items Table -->
+<div class="ms-card">
+    <div class="ms-card-header">
+        <h2 class="ms-card-title">Order Items</h2>
+    </div>
+    <div class="ms-card-body" style="padding:0;">
+        <table class="ms-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Unit Cost</th>
+                    <th>Tax %</th>
+                    <th>Ordered Qty</th>
+                    <th>Received Qty</th>
+                    <th style="text-align:right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@item.ProductName</div></td>
+                        <td class="ms-cell-meta">Rs. @item.UnitCost.ToString("N2")</td>
+                        <td class="ms-cell-meta">@item.TaxPercent%</td>
+                        <td class="ms-cell-meta">@item.OrderedQuantity</td>
+                        <td>
+                            @if (Model.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.FullyReceived)
+                            {
+                                <span class="ms-badge ms-badge-success">@item.ReceivedQuantity</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-muted">Pending</span>
+                            }
+                        </td>
+                        <td style="text-align:right;font-weight:600;color:var(--slate-800);">Rs. @item.Total.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

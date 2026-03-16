@@ -1,0 +1,128 @@
+﻿@model Simplified.Medistock.Models.ViewModels.SalesViewModel
+@{
+    ViewData["Title"] = "Sale Details";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">@Model.SaleNumber</h1>
+        <p class="ms-page-subtitle">@Model.SaleDate.ToString("MMM dd, yyyy hh:mm tt")</p>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+    <!-- Sale Info -->
+    <div class="ms-card">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">Sale Info</h2>
+            @if (Model.Status == Simplified.Medistock.Models.Enums.SaleStatus.Completed)
+            {
+                <span class="ms-badge ms-badge-success">Completed</span>
+            }
+            else if (Model.Status == Simplified.Medistock.Models.Enums.SaleStatus.Pending)
+            {
+                <span class="ms-badge ms-badge-warning">Pending</span>
+            }
+            else
+            {
+                <span class="ms-badge ms-badge-danger">Cancelled</span>
+            }
+        </div>
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Customer</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.CustomerName</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Payment</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.PaymentMethod</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Amount Paid</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">Rs. @Model.AmountPaid.ToString("N2")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Change</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">Rs. @Model.Change.ToString("N2")</td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.PrescriptionNumber))
+                {
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Prescription</td>
+                        <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.PrescriptionNumber</td>
+                    </tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <tr>
+                        <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Notes</td>
+                        <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.Notes</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="ms-card">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">Totals</h2>
+        </div>
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Subtotal</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);text-align:right;">Rs. @Model.SubTotal.ToString("N2")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Tax (13%)</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);text-align:right;">Rs. @Model.TotalTax.ToString("N2")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Discount</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);text-align:right;">Rs. @Model.TotalDiscount.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <td style="padding:12px 0;font-size:14px;font-weight:700;color:var(--slate-800);">Grand Total</td>
+                    <td style="padding:12px 0;font-size:16px;font-weight:700;color:var(--primary);text-align:right;">Rs. @Model.GrandTotal.ToString("N2")</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Sale Items -->
+<div class="ms-card">
+    <div class="ms-card-header">
+        <h2 class="ms-card-title">Items</h2>
+    </div>
+    <div class="ms-card-body" style="padding:0;">
+        <table class="ms-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Qty</th>
+                    <th>Discount</th>
+                    <th style="text-align:right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SaleItems)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@item.ProductName</div></td>
+                        <td class="ms-cell-meta">Rs. @item.UnitPrice.ToString("N2")</td>
+                        <td class="ms-cell-meta">@item.Quantity</td>
+                        <td class="ms-cell-meta">Rs. @item.Discount.ToString("N2")</td>
+                        <td style="text-align:right;font-weight:600;color:var(--slate-800);">Rs. @item.Subtotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

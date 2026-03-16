@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.UserViewModel>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">User Management</h1>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> New User
+    </a>
+</div>
+
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4" style="text-align:center;color:var(--slate-400);padding:48px;">
+                        <i class="bi bi-people" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No users found.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@user.Email</div></td>
+                        <td class="ms-cell-meta">@user.UserName</td>
+                        <td>
+                            @if (user.Role == "Admin")
+                            {
+                                <span class="ms-badge ms-badge-danger">Admin</span>
+                            }
+                            else if (user.Role == "Pharmacist")
+                            {
+                                <span class="ms-badge ms-badge-success">Pharmacist</span>
+                            }
+                            else if (user.Role == "Cashier")
+                            {
+                                <span class="ms-badge ms-badge-warning">Cashier</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-muted">@user.Role</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                <a asp-action="Edit" asp-route-id="@user.Id"
+                                   class="ms-btn ms-btn-secondary ms-btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="ms-btn ms-btn-danger ms-btn-sm"
+                                        onclick="confirmDelete('@user.Id', '@user.Email')">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;border:1px solid var(--slate-100);">
+                <div class="modal-header" style="border-bottom:1px solid var(--slate-100);">
+                    <h5 class="modal-title" style="font-size:15px;font-weight:600;color:var(--slate-800);">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="color:var(--slate-600);font-size:14px;">
+                    Are you sure you want to delete <strong id="userName" style="color:var(--slate-800);"></strong>?
+                </div>
+                <div class="modal-footer" style="border-top:1px solid var(--slate-100);gap:8px;">
+                    <button type="button" class="ms-btn ms-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="ms-btn ms-btn-danger">
+                            <i class="bi bi-trash3"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, email) {
+            document.getElementById('userName').textContent = email;
+            document.getElementById('deleteForm').action = '/Users/Delete/' + id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}

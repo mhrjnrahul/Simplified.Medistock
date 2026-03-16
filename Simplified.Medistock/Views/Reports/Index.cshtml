@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Reports</h1>
+        <p class="ms-page-subtitle">Generate and view system reports</p>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div class="ms-card">
+        <div class="ms-card-body" style="display:flex;align-items:center;gap:20px;">
+            <div style="width:56px;height:56px;border-radius:14px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-receipt" style="font-size:26px;color:var(--primary);"></i>
+            </div>
+            <div style="flex:1;">
+                <h3 style="font-size:16px;font-weight:600;color:var(--slate-800);margin:0 0 4px;">Sales Report</h3>
+                <p style="font-size:13px;color:var(--slate-500);margin:0 0 16px;">View sales by date range with revenue breakdown.</p>
+                <a asp-action="SalesReport" class="ms-btn ms-btn-primary ms-btn-sm">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="ms-card">
+        <div class="ms-card-body" style="display:flex;align-items:center;gap:20px;">
+            <div style="width:56px;height:56px;border-radius:14px;background:#d1fae5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-box-seam" style="font-size:26px;color:#059669;"></i>
+            </div>
+            <div style="flex:1;">
+                <h3 style="font-size:16px;font-weight:600;color:var(--slate-800);margin:0 0 4px;">Stock Report</h3>
+                <p style="font-size:13px;color:var(--slate-500);margin:0 0 16px;">View current stock levels, low stock and expiry status.</p>
+                <a asp-action="StockReport" class="ms-btn ms-btn-primary ms-btn-sm">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

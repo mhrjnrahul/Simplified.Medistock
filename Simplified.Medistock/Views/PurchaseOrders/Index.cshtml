@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.PurchaseOrderViewModel>
+@{
+    ViewData["Title"] = "Purchase Orders";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Purchase Orders</h1>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> New Purchase Order
+    </a>
+</div>
+
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>PO Number</th>
+                <th>Supplier</th>
+                <th>Order Date</th>
+                <th>Expected Delivery</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="text-align:center;color:var(--slate-400);padding:48px;">
+                        <i class="bi bi-bag" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No purchase orders found. Create one.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var po in Model)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@po.PONumber</div></td>
+                        <td style="color:var(--slate-500)">@po.SupplierName</td>
+                        <td class="ms-cell-meta">@po.OrderDate.ToString("MMM dd, yyyy")</td>
+                        <td class="ms-cell-meta">@(po.ExpectedDeliveryDate?.ToString("MMM dd, yyyy") ?? "—")</td>
+                        <td style="font-weight:600;color:var(--slate-800);">Rs. @po.TotalAmount.ToString("N2")</td>
+                        <td>
+                            @if (po.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.Draft)
+                            {
+                                <span class="ms-badge ms-badge-warning">Pending</span>
+                            }
+                            else if (po.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.FullyReceived)
+                            {
+                                <span class="ms-badge ms-badge-success">Received</span>
+                            }
+                            else if (po.Status == Simplified.Medistock.Models.Enums.PurchaseOrderStatus.Cancelled)
+                            {
+                                <span class="ms-badge ms-badge-danger">Cancelled</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-muted">Draft</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@po.Id"
+                               class="ms-btn ms-btn-secondary ms-btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

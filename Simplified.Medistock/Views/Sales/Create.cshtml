@@ -1,0 +1,203 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CreateSaleViewModel
+@{
+    ViewData["Title"] = "New Sale";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">New Sale</h1>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<form asp-action="Create" method="post" id="saleForm">
+    @Html.AntiForgeryToken()
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <!-- Left Column -->
+        <div>
+            <div class="ms-form-section">
+                <p class="ms-form-section-title">Sale Info</p>
+
+                <div asp-validation-summary="ModelOnly"
+                     class="ms-alert ms-alert-danger"
+                     style="display:@(ViewData.ModelState.IsValid ? "none" : "block")">
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="CustomerId" class="ms-label">Customer</label>
+                    <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="ms-input">
+                        <option value="">-- Walk-in Customer --</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="PaymentMethod" class="ms-label">Payment Method</label>
+                    <select asp-for="PaymentMethod" asp-items="ViewBag.PaymentMethods" class="ms-input"></select>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="AmountPaid" class="ms-label">Amount Paid</label>
+                    <input asp-for="AmountPaid" class="ms-input" type="number" step="0.01" id="amountPaid" />
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="PrescriptionNumber" class="ms-label">Prescription Number</label>
+                    <input asp-for="PrescriptionNumber" class="ms-input" placeholder="Optional" />
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="Notes" class="ms-label">Notes</label>
+                    <textarea asp-for="Notes" class="ms-input" rows="3" style="resize:vertical;"></textarea>
+                </div>
+            </div>
+
+            <!-- Totals Card -->
+            <div class="ms-card" style="margin-top:16px;">
+                <div class="ms-card-body">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;color:var(--slate-500);">Subtotal</td>
+                            <td style="padding:10px 0;text-align:right;font-size:14px;color:var(--slate-700);" id="displaySubTotal">Rs. 0.00</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;color:var(--slate-500);">Tax (13%)</td>
+                            <td style="padding:10px 0;text-align:right;font-size:14px;color:var(--slate-700);" id="displayTax">Rs. 0.00</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-800);">Grand Total</td>
+                            <td style="padding:10px 0;text-align:right;font-size:15px;font-weight:700;color:var(--primary);" id="displayGrandTotal">Rs. 0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px 0;font-size:13px;color:var(--slate-500);">Change</td>
+                            <td style="padding:10px 0;text-align:right;font-size:14px;color:var(--slate-700);" id="displayChange">Rs. 0.00</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column — Items -->
+        <div>
+            <div class="ms-form-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <p class="ms-form-section-title" style="margin:0;">Sale Items</p>
+                    <button type="button" class="ms-btn ms-btn-secondary ms-btn-sm" onclick="addItem()">
+                        <i class="bi bi-plus-lg"></i> Add Item
+                    </button>
+                </div>
+
+                <div id="itemsContainer"></div>
+
+                <p id="noItemsMsg" style="color:var(--slate-400);font-size:13px;text-align:center;padding:24px 0;">
+                    No items added yet. Click "Add Item" to begin.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:24px;">
+        <button type="submit" class="ms-btn ms-btn-primary">
+            <i class="bi bi-check-lg"></i> Complete Sale
+        </button>
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const productList = [];
+        @if (ViewBag.Products != null)
+        {
+                foreach (var item in ViewBag.Products as Microsoft.AspNetCore.Mvc.Rendering.SelectList)
+                {
+                        @:productList.push({ id: "@item.Value", name: "@item.Text" });
+                }
+        }
+
+        const productPrices = {
+        @if (ViewBag.ProductPrices != null)
+        {
+                foreach (var kvp in (Dictionary<int, decimal>)ViewBag.ProductPrices)
+                {
+                        @:@kvp.Key: @kvp.Value,
+                }
+        }
+        };
+
+        let itemIndex = 0;
+
+        function addItem() {
+            document.getElementById('noItemsMsg').style.display = 'none';
+            const container = document.getElementById('itemsContainer');
+            const div = document.createElement('div');
+            div.id = `item_${itemIndex}`;
+            div.style.cssText = 'border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px;';
+            div.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <span style="font-size:13px;font-weight:600;color:var(--slate-600);">Item ${itemIndex + 1}</span>
+                    <button type="button" class="ms-btn ms-btn-danger ms-btn-sm" onclick="removeItem(${itemIndex})">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label class="ms-label">Product</label>
+                    <select name="Items[${itemIndex}].ProductId" class="ms-input" onchange="updateTotals()">
+                        <option value="">-- Select Product --</option>
+                        ${productList.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div>
+                        <label class="ms-label">Quantity</label>
+                        <input type="number" name="Items[${itemIndex}].Quantity" class="ms-input"
+                               min="1" value="1" onchange="updateTotals()" />
+                    </div>
+                    <div>
+                        <label class="ms-label">Discount (Rs.)</label>
+                        <input type="number" name="Items[${itemIndex}].Discount" class="ms-input"
+                               min="0" step="0.01" value="0" onchange="updateTotals()" />
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            itemIndex++;
+            updateTotals();
+        }
+
+        function removeItem(index) {
+            document.getElementById(`item_${index}`)?.remove();
+            if (document.getElementById('itemsContainer').children.length === 0) {
+                document.getElementById('noItemsMsg').style.display = 'block';
+            }
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let subTotal = 0;
+            const items = document.getElementById('itemsContainer').children;
+
+            for (const item of items) {
+                const productId = parseInt(item.querySelector('select[name*="ProductId"]')?.value);
+                const qty = parseFloat(item.querySelector('input[name*="Quantity"]')?.value) || 0;
+                const discount = parseFloat(item.querySelector('input[name*="Discount"]')?.value) || 0;
+                const unitPrice = productPrices[productId] || 0;
+                subTotal += (unitPrice - discount) * qty;
+            }
+
+            const tax = subTotal * 0.13;
+            const grandTotal = subTotal + tax;
+            const amountPaid = parseFloat(document.getElementById('amountPaid')?.value) || 0;
+            const change = amountPaid - grandTotal;
+
+            document.getElementById('displaySubTotal').textContent = `Rs. ${subTotal.toFixed(2)}`;
+            document.getElementById('displayTax').textContent = `Rs. ${tax.toFixed(2)}`;
+            document.getElementById('displayGrandTotal').textContent = `Rs. ${grandTotal.toFixed(2)}`;
+            document.getElementById('displayChange').textContent = `Rs. ${change.toFixed(2)}`;
+        }
+
+        document.getElementById('amountPaid')?.addEventListener('input', updateTotals);
+    </script>
+}

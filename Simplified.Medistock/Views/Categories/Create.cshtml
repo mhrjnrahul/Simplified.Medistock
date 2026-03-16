@@ -1,0 +1,69 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CreateCategoryViewModel
+
+@{
+    ViewData["Title"] = "Add Category";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Add Category</h1>
+        <p class="ms-page-subtitle">Create a new medicine category</p>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div style="max-width:600px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="ms-form-section">
+            <p class="ms-form-section-title">Category Details</p>
+
+            <div asp-validation-summary="ModelOnly"
+                 class="ms-alert ms-alert-danger"
+                 style="display:@(ViewData.ModelState.IsValid ? "none" : "block")">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Name" class="ms-label">
+                    Name <span style="color:var(--danger-text)">*</span>
+                </label>
+                <input asp-for="Name" class="ms-input" placeholder="e.g. Pain Relief" />
+                <span asp-validation-for="Name" style="font-size:12px;color:var(--danger-text);"></span>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Description" class="ms-label">Description</label>
+                <textarea asp-for="Description" class="ms-input" rows="3"
+                          placeholder="Optional description" style="resize:vertical;"></textarea>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="IconClass" class="ms-label">Icon Class</label>
+                <input asp-for="IconClass" class="ms-input" placeholder="e.g. bi bi-capsule" />
+                <p class="ms-hint">Use Bootstrap Icons class e.g. <code>bi bi-capsule</code></p>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                <input asp-for="IsActive" type="checkbox" style="width:16px;height:16px;accent-color:var(--primary);" />
+                <label asp-for="IsActive" class="ms-label" style="margin:0;">Active</label>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+            <button type="submit" class="ms-btn ms-btn-primary">
+                <i class="bi bi-check-lg"></i> Save Category
+            </button>
+            <a asp-action="Index" class="ms-btn ms-btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

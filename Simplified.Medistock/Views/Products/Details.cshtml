@@ -1,0 +1,240 @@
+﻿@model Simplified.Medistock.Models.ViewModels.ProductViewModel
+@using Simplified.Medistock.Models.Enums
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">@Model.Name</h1>
+        <p class="ms-page-subtitle">@(Model.GenericName ?? "Product Details")</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+@* Alert banners for critical states *@
+@if (Model.IsExpired)
+{
+    <div class="ms-alert ms-alert-danger">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        This product has <strong>expired</strong> on @Model.ExpiryDate!.Value.ToString("MMMM dd, yyyy").
+    </div>
+}
+else if (Model.IsExpiringSoon)
+{
+    <div class="ms-alert" style="background:var(--warning-bg);color:var(--warning-text);">
+        <i class="bi bi-clock-fill"></i>
+        This product is <strong>expiring soon</strong> on @Model.ExpiryDate!.Value.ToString("MMMM dd, yyyy").
+    </div>
+}
+@if (Model.IsLowStock)
+{
+    <div class="ms-alert" style="background:var(--warning-bg);color:var(--warning-text);">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <strong>Low stock alert</strong> — Only @Model.Quantity units remaining (reorder level: @Model.ReorderLevel).
+    </div>
+}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+    <!-- Left -->
+    <div>
+        <div class="ms-card" style="margin-bottom:24px;">
+            <div class="ms-card-header">
+                <h2 class="ms-card-title">Basic Information</h2>
+                @switch (Model.Status)
+                {
+                    case ProductStatus.Active:
+                        <span class="ms-badge ms-badge-success">Active</span>
+                        break;
+                    case ProductStatus.Inactive:
+                        <span class="ms-badge ms-badge-muted">Inactive</span>
+                        break;
+                    case ProductStatus.OutOfStock:
+                        <span class="ms-badge ms-badge-warning">Out of Stock</span>
+                        break;
+                    case ProductStatus.Discontinued:
+                        <span class="ms-badge ms-badge-danger">Discontinued</span>
+                        break;
+                }
+            </div>
+            <div class="ms-card-body">
+                <table style="width:100%;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">SKU</td>
+                        <td style="padding:10px 0;"><code style="font-size:13px;">@Model.SKU</code></td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(Model.Barcode))
+                    {
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Barcode</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.Barcode</td>
+                        </tr>
+                    }
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Category</td>
+                        <td style="padding:10px 0;font-size:14px;">@Model.CategoryName</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Supplier</td>
+                        <td style="padding:10px 0;font-size:14px;">@(Model.SupplierName ?? "—")</td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(Model.Manufacturer))
+                    {
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Manufacturer</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.Manufacturer</td>
+                        </tr>
+                    }
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Prescription</td>
+                        <td style="padding:10px 0;">
+                            @if (Model.RequiresPrescription)
+                            {
+                                <span class="ms-badge ms-badge-rx">Rx Required</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-success">OTC</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Added</td>
+                        <td style="padding:10px 0;font-size:13px;color:var(--slate-400);">@Model.CreatedAt.ToString("MMMM dd, yyyy")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pricing Card -->
+        <div class="ms-card">
+            <div class="ms-card-header">
+                <h2 class="ms-card-title">Pricing</h2>
+            </div>
+            <div class="ms-card-body">
+                <table style="width:100%;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Cost Price</td>
+                        <td style="padding:10px 0;font-size:14px;font-weight:600;color:var(--slate-800);">Rs. @Model.CostPrice.ToString("N2")</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Selling Price</td>
+                        <td style="padding:10px 0;font-size:14px;font-weight:600;color:var(--primary);">Rs. @Model.SellingPrice.ToString("N2")</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Discount</td>
+                        <td style="padding:10px 0;font-size:14px;">@Model.DiscountPercent%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Tax</td>
+                        <td style="padding:10px 0;font-size:14px;">@Model.TaxPercent%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div>
+        <!-- Stock Card -->
+        <div class="ms-card" style="margin-bottom:24px;">
+            <div class="ms-card-header">
+                <h2 class="ms-card-title">Stock</h2>
+            </div>
+            <div class="ms-card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+                    <div style="text-align:center;padding:16px;background:var(--slate-50);border-radius:12px;">
+                        <div style="font-size:28px;font-weight:700;color:@(Model.IsLowStock ? "var(--warning-text)" : "var(--slate-800)");">@Model.Quantity</div>
+                        <div style="font-size:12px;color:var(--slate-400);">In Stock</div>
+                    </div>
+                    <div style="text-align:center;padding:16px;background:var(--slate-50);border-radius:12px;">
+                        <div style="font-size:28px;font-weight:700;color:var(--slate-800);">@Model.ReorderLevel</div>
+                        <div style="font-size:12px;color:var(--slate-400);">Reorder At</div>
+                    </div>
+                    <div style="text-align:center;padding:16px;background:var(--slate-50);border-radius:12px;">
+                        <div style="font-size:28px;font-weight:700;color:var(--slate-800);">@Model.MaxStockLevel</div>
+                        <div style="font-size:12px;color:var(--slate-400);">Max Level</div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.UnitOfMeasure))
+                {
+                    <p style="font-size:13px;color:var(--slate-500);">
+                        Unit: <strong>@Model.UnitOfMeasure</strong>
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- Medicine Details Card -->
+        <div class="ms-card">
+            <div class="ms-card-header">
+                <h2 class="ms-card-title">Medicine Details</h2>
+            </div>
+            <div class="ms-card-body">
+                <table style="width:100%;border-collapse:collapse;">
+                    @if (!string.IsNullOrEmpty(Model.BatchNumber))
+                    {
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Batch No.</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.BatchNumber</td>
+                        </tr>
+                    }
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Expiry Date</td>
+                        <td style="padding:10px 0;">
+                            @if (Model.ExpiryDate.HasValue)
+                            {
+                                @if (Model.IsExpired)
+                                {
+                                    <span class="ms-badge ms-badge-danger">Expired — @Model.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                                else if (Model.IsExpiringSoon)
+                                {
+                                    <span class="ms-badge ms-badge-warning">@Model.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span style="font-size:14px;">@Model.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                            }
+                            else
+                            {
+                                <span style="color:var(--slate-400);">—</span>
+                            }
+                        </td>
+                    </tr>
+                    @if (Model.DosageForm.HasValue)
+                    {
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Dosage Form</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.DosageForm</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Strength))
+                    {
+                        <tr style="border-bottom:1px solid var(--slate-100);">
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Strength</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.Strength</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.StorageConditions))
+                    {
+                        <tr>
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Storage</td>
+                            <td style="padding:10px 0;font-size:14px;">@Model.StorageConditions</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

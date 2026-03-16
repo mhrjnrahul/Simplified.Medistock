@@ -1,0 +1,167 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CreatePurchaseOrderViewModel
+@{
+    ViewData["Title"] = "New Purchase Order";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">New Purchase Order</h1>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<form asp-action="Create" method="post" id="poForm">
+    @Html.AntiForgeryToken()
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <!-- Left Column -->
+        <div>
+            <div class="ms-form-section">
+                <p class="ms-form-section-title">Order Info</p>
+
+                <div asp-validation-summary="ModelOnly"
+                     class="ms-alert ms-alert-danger"
+                     style="display:@(ViewData.ModelState.IsValid ? "none" : "block")">
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="SupplierId" class="ms-label">
+                        Supplier <span style="color:var(--danger-text)">*</span>
+                    </label>
+                    <select asp-for="SupplierId" asp-items="ViewBag.Suppliers" class="ms-input">
+                        <option value="">-- Select Supplier --</option>
+                    </select>
+                    <span asp-validation-for="SupplierId" style="font-size:12px;color:var(--danger-text);"></span>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="ExpectedDeliveryDate" class="ms-label">Expected Delivery Date</label>
+                    <input asp-for="ExpectedDeliveryDate" type="date" class="ms-input" />
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label asp-for="Notes" class="ms-label">Notes</label>
+                    <textarea asp-for="Notes" class="ms-input" rows="3" style="resize:vertical;"
+                              placeholder="Any notes about this order"></textarea>
+                </div>
+            </div>
+
+            <!-- Total Card -->
+            <div class="ms-card" style="margin-top:16px;">
+                <div class="ms-card-body">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:10px 0;font-size:13px;font-weight:600;color:var(--slate-800);">Total Amount</td>
+                            <td style="padding:10px 0;text-align:right;font-size:18px;font-weight:700;color:var(--primary);" id="displayTotal">Rs. 0.00</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column — Items -->
+        <div>
+            <div class="ms-form-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <p class="ms-form-section-title" style="margin:0;">Order Items</p>
+                    <button type="button" class="ms-btn ms-btn-secondary ms-btn-sm" onclick="addItem()">
+                        <i class="bi bi-plus-lg"></i> Add Item
+                    </button>
+                </div>
+
+                <div id="itemsContainer"></div>
+
+                <p id="noItemsMsg" style="color:var(--slate-400);font-size:13px;text-align:center;padding:24px 0;">
+                    No items added yet. Click "Add Item" to begin.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:24px;">
+        <button type="submit" class="ms-btn ms-btn-primary">
+            <i class="bi bi-check-lg"></i> Create Purchase Order
+        </button>
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const productList = [];
+        @if (ViewBag.Products != null)
+        {
+                foreach (var item in ViewBag.Products as Microsoft.AspNetCore.Mvc.Rendering.SelectList)
+                {
+                        @:productList.push({ id: "@item.Value", name: "@item.Text" });
+                }
+        }
+
+        let itemIndex = 0;
+
+        function addItem() {
+            document.getElementById('noItemsMsg').style.display = 'none';
+            const container = document.getElementById('itemsContainer');
+            const div = document.createElement('div');
+            div.id = `item_${itemIndex}`;
+            div.style.cssText = 'border:1px solid var(--slate-200);border-radius:10px;padding:16px;margin-bottom:12px;';
+            div.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <span style="font-size:13px;font-weight:600;color:var(--slate-600);">Item ${itemIndex + 1}</span>
+                    <button type="button" class="ms-btn ms-btn-danger ms-btn-sm" onclick="removeItem(${itemIndex})">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label class="ms-label">Product</label>
+                    <select name="Items[${itemIndex}].ProductId" class="ms-input" onchange="updateTotal()">
+                        <option value="">-- Select Product --</option>
+                        ${productList.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                    <div>
+                        <label class="ms-label">Quantity</label>
+                        <input type="number" name="Items[${itemIndex}].OrderedQuantity" class="ms-input"
+                               min="1" value="1" onchange="updateTotal()" />
+                    </div>
+                    <div>
+                        <label class="ms-label">Unit Cost (Rs.)</label>
+                        <input type="number" name="Items[${itemIndex}].UnitCost" class="ms-input"
+                               min="0" step="0.01" value="0" onchange="updateTotal()" />
+                    </div>
+                    <div>
+                        <label class="ms-label">Tax %</label>
+                        <input type="number" name="Items[${itemIndex}].TaxPercent" class="ms-input"
+                               min="0" max="100" step="0.01" value="0" onchange="updateTotal()" />
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            itemIndex++;
+            updateTotal();
+        }
+
+        function removeItem(index) {
+            document.getElementById(`item_${index}`)?.remove();
+            if (document.getElementById('itemsContainer').children.length === 0) {
+                document.getElementById('noItemsMsg').style.display = 'block';
+            }
+            updateTotal();
+        }
+
+        function updateTotal() {
+            let total = 0;
+            const items = document.getElementById('itemsContainer').children;
+            for (const item of items) {
+                const qty = parseFloat(item.querySelector('input[name*="OrderedQuantity"]')?.value) || 0;
+                const unitCost = parseFloat(item.querySelector('input[name*="UnitCost"]')?.value) || 0;
+                const tax = parseFloat(item.querySelector('input[name*="TaxPercent"]')?.value) || 0;
+                total += (unitCost * qty) + (unitCost * qty * tax / 100);
+            }
+            document.getElementById('displayTotal').textContent = `Rs. ${total.toFixed(2)}`;
+        }
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CreateSupplierViewModel
+
+@{
+    ViewData["Title"] = "Add Supplier";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Add Supplier</h1>
+        <p class="ms-page-subtitle">Create new supplier</p>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div style="max-width:600px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="ms-form-section">
+            <p class="ms-form-section-title">Supplier Details</p>
+
+            <div asp-validation-summary="ModelOnly"
+                 class="ms-alert ms-alert-danger"
+                 style="display:@(ViewData.ModelState.IsValid ? "none" : "block")">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Name" class="ms-label">
+                    Name <span style="color:var(--danger-text)">*</span>
+                </label>
+                <input asp-for="Name" class="ms-input" placeholder="e.g. Medicity" />
+                <span asp-validation-for="Name" style="font-size:12px;color:var(--danger-text);"></span>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="ContactPerson" class="ms-label">Contact Person</label>
+                <input asp-for="ContactPerson" class="ms-input" placeholder="e.g. John Smith" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Email" class="ms-label">Email</label>
+                <input asp-for="Email" class="ms-input" placeholder="maharjanrahul58@gmail.com" />
+                
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Address" class="ms-label">Address</label>
+                <input asp-for="Address" class="ms-input" placeholder="e.g. Patan Dhoka" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="City" class="ms-label">City</label>
+                <input asp-for="City" class="ms-input" placeholder="e.g. Lalitpur" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Country" class="ms-label">Country</label>
+                <input asp-for="Country" class="ms-input" placeholder="e.g. Nepal" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="TaxNumber" class="ms-label">Tax Number</label>
+                <input asp-for="TaxNumber" class="ms-input" placeholder="e.g. " />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="LicenseNumber" class="ms-label">LicenseNumber</label>
+                <input asp-for="LicenseNumber" class="ms-input" placeholder="e.g." />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Phone" class="ms-label">Phone</label>
+                <input asp-for="Phone" class="ms-input" placeholder="e.g. Patan Dhoka" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Notes" class="ms-label">Notes</label>
+                <textarea asp-for="Notes" class="ms-input" rows="3" style="resize:vertical;"
+                          placeholder="Any notes about this supplier"></textarea>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label asp-for="Status" class="ms-label">Status</label>
+                <select asp-for="Status" asp-items="ViewBag.Statuses" class="ms-input"></select>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+            <button type="submit" class="ms-btn ms-btn-primary">
+                <i class="bi bi-check-lg"></i> Save Supplier
+            </button>
+            <a asp-action="Index" class="ms-btn ms-btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,479 @@
+﻿/* ─── Design Tokens ─────────────────────────────────── */
+:root {
+    --primary: #2563EB;
+    --primary-dark: #1D4ED8;
+    --primary-light: #EFF6FF;
+    --primary-100: #DBEAFE;
+    --slate-800: #1E293B;
+    --slate-700: #334155;
+    --slate-600: #475569;
+    --slate-500: #64748B;
+    --slate-400: #94A3B8;
+    --slate-200: #E2E8F0;
+    --slate-100: #F1F5F9;
+    --slate-50: #F8FAFC;
+    --success-bg: #F0FDF4;
+    --success-text: #16A34A;
+    --warning-bg: #FEFCE8;
+    --warning-text: #CA8A04;
+    --danger-bg: #FEF2F2;
+    --danger-text: #DC2626;
+    --muted-bg: #F1F5F9;
+    --muted-text: #64748B;
+    --rx-bg: #FFF7ED;
+    --rx-text: #EA580C;
+}
+
+/* ─── Base ───────────────────────────────────────────── */
+body {
+    background: var(--slate-50);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--slate-700);
+}
+
+/* ─── Sidebar ────────────────────────────────────────── */
+.ms-sidebar {
+    width: 256px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: #fff;
+    border-right: 1px solid var(--slate-100);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.ms-sidebar-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--slate-100);
+    text-decoration: none;
+}
+
+.ms-sidebar-logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.ms-sidebar-logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--slate-800);
+    letter-spacing: -0.025em;
+}
+
+.ms-nav {
+    flex: 1;
+    padding: 12px 8px;
+    list-style: none;
+    margin: 0;
+}
+
+.ms-nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--slate-400);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 12px 4px;
+    margin-top: 8px;
+}
+
+.ms-nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--slate-600);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 150ms;
+}
+
+    .ms-nav-item a:hover {
+        color: var(--slate-800);
+        background: var(--slate-50);
+    }
+
+    .ms-nav-item a.active {
+        color: var(--primary);
+        background: var(--primary-light);
+    }
+
+    .ms-nav-item a i {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+
+.ms-sidebar-user {
+    border-top: 1px solid var(--slate-100);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ms-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-100);
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ms-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-800);
+}
+
+.ms-user-role {
+    font-size: 11px;
+    color: var(--slate-400);
+}
+
+/* ─── Main Content ───────────────────────────────────── */
+.ms-main {
+    margin-left: 256px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ─── Top Navbar ─────────────────────────────────────── */
+.ms-topbar {
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid var(--slate-100);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.ms-topbar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--slate-800);
+    margin: 0;
+}
+
+.ms-topbar-subtitle {
+    font-size: 12px;
+    color: var(--slate-400);
+    margin: 0;
+}
+
+.ms-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ─── Page Content ───────────────────────────────────── */
+.ms-content {
+    padding: 24px;
+    flex: 1;
+}
+
+/* ─── Cards ──────────────────────────────────────────── */
+.ms-card {
+    background: #fff;
+    border: 1px solid var(--slate-100);
+    border-radius: 16px;
+    transition: all 300ms ease;
+}
+
+    .ms-card:hover {
+        box-shadow: 0 4px 24px rgba(37, 99, 235, 0.06);
+    }
+
+.ms-card-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ms-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--slate-800);
+    margin: 0;
+}
+
+.ms-card-body {
+    padding: 24px;
+}
+
+/* ─── Page Header ────────────────────────────────────── */
+.ms-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.ms-page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--slate-800);
+    margin: 0;
+}
+
+.ms-page-subtitle {
+    font-size: 14px;
+    color: var(--slate-500);
+    margin: 4px 0 0;
+}
+
+/* ─── Buttons ────────────────────────────────────────── */
+.ms-btn {
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 150ms;
+    line-height: 1;
+}
+
+.ms-btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+    .ms-btn-primary:hover {
+        background: var(--primary-dark);
+        color: white;
+    }
+
+.ms-btn-secondary {
+    background: white;
+    color: var(--slate-700);
+    border: 1px solid var(--slate-200);
+}
+
+    .ms-btn-secondary:hover {
+        background: var(--slate-50);
+        color: var(--slate-700);
+    }
+
+.ms-btn-danger {
+    background: #EF4444;
+    color: white;
+}
+
+    .ms-btn-danger:hover {
+        background: var(--danger-text);
+        color: white;
+    }
+
+.ms-btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+/* ─── Inputs ─────────────────────────────────────────── */
+.ms-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--slate-200);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--slate-700);
+    background: white;
+    outline: none;
+    transition: all 150ms;
+}
+
+    .ms-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+    }
+
+    .ms-input.is-invalid {
+        border-color: #F87171;
+        background: var(--danger-bg);
+    }
+
+.ms-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-700);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.ms-hint {
+    font-size: 12px;
+    color: var(--slate-400);
+    margin-top: 4px;
+}
+
+/* ─── Table ──────────────────────────────────────────── */
+.ms-table-wrapper {
+    background: white;
+    border: 1px solid var(--slate-100);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ms-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .ms-table thead tr {
+        background: var(--slate-50);
+        border-bottom: 1px solid var(--slate-100);
+    }
+
+    .ms-table th {
+        padding: 12px 20px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--slate-500);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .ms-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: var(--slate-700);
+        border-bottom: 1px solid var(--slate-50);
+    }
+
+    .ms-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ms-table tbody tr:hover td {
+        background: rgba(248, 250, 252, 0.5);
+    }
+
+.ms-cell-primary {
+    font-weight: 500;
+    color: var(--slate-800);
+}
+
+.ms-cell-meta {
+    font-size: 12px;
+    color: var(--slate-400);
+}
+
+/* ─── Badges ─────────────────────────────────────────── */
+.ms-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ms-badge-success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.ms-badge-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+.ms-badge-danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+}
+
+.ms-badge-muted {
+    background: var(--muted-bg);
+    color: var(--muted-text);
+}
+
+.ms-badge-primary {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.ms-badge-rx {
+    background: var(--rx-bg);
+    color: var(--rx-text);
+}
+
+/* ─── Alerts (Toast-style inline) ───────────────────── */
+.ms-alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ms-alert-success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.ms-alert-danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+}
+
+/* ─── Form Card ──────────────────────────────────────── */
+.ms-form-section {
+    background: white;
+    border: 1px solid var(--slate-100);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.ms-form-section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--slate-800);
+    margin: 0 0 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--slate-100);
+}

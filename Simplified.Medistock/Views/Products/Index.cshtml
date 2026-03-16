@@ -1,0 +1,210 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Products</h1>
+        <p class="ms-page-subtitle">Manage your medicine inventory</p>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> Add Product
+    </a>
+</div>
+
+@* Quick stat pills at top *@
+<div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+    <div style="background:white;border:1px solid var(--slate-100);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+        <i class="bi bi-box-seam" style="color:var(--primary);font-size:18px;"></i>
+        <div>
+            <div style="font-size:20px;font-weight:700;color:var(--slate-800);">@Model.Count()</div>
+            <div style="font-size:12px;color:var(--slate-400);">Total Products</div>
+        </div>
+    </div>
+    <div style="background:white;border:1px solid var(--slate-100);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+        <i class="bi bi-exclamation-triangle" style="color:#CA8A04;font-size:18px;"></i>
+        <div>
+            <div style="font-size:20px;font-weight:700;color:var(--slate-800);">@Model.Count(p => p.IsLowStock)</div>
+            <div style="font-size:12px;color:var(--slate-400);">Low Stock</div>
+        </div>
+    </div>
+    <div style="background:white;border:1px solid var(--slate-100);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+        <i class="bi bi-clock" style="color:#DC2626;font-size:18px;"></i>
+        <div>
+            <div style="font-size:20px;font-weight:700;color:var(--slate-800);">@Model.Count(p => p.IsExpiringSoon)</div>
+            <div style="font-size:12px;color:var(--slate-400);">Expiring Soon</div>
+        </div>
+    </div>
+    <div style="background:white;border:1px solid var(--slate-100);border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+        <i class="bi bi-x-circle" style="color:#DC2626;font-size:18px;"></i>
+        <div>
+            <div style="font-size:20px;font-weight:700;color:var(--slate-800);">@Model.Count(p => p.IsExpired)</div>
+            <div style="font-size:12px;color:var(--slate-400);">Expired</div>
+        </div>
+    </div>
+</div>
+
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Expiry</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8" style="text-align:center;color:var(--slate-400);padding:48px;">
+                        <i class="bi bi-box-seam" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No products found. Add your first one.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="ms-cell-primary">@product.Name</div>
+                            @if (!string.IsNullOrEmpty(product.GenericName))
+                            {
+                                <div class="ms-cell-meta">@product.GenericName</div>
+                            }
+                            @if (product.RequiresPrescription)
+                            {
+                                <span class="ms-badge ms-badge-rx" style="margin-top:4px;">Rx</span>
+                            }
+                        </td>
+                        <td>
+                            <code style="font-size:12px;color:var(--slate-600);">@product.SKU</code>
+                        </td>
+                        <td style="color:var(--slate-500);">@product.CategoryName</td>
+                        <td>
+                            <div class="ms-cell-primary">Rs. @product.SellingPrice.ToString("N2")</div>
+                            <div class="ms-cell-meta">Cost: Rs. @product.CostPrice.ToString("N2")</div>
+                        </td>
+                        <td>
+                            @if (product.IsLowStock)
+                            {
+                                <span class="ms-badge ms-badge-warning">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>@product.Quantity
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-success">@product.Quantity</span>
+                            }
+                            <div class="ms-cell-meta">Min: @product.ReorderLevel</div>
+                        </td>
+                        <td>
+                            @if (product.ExpiryDate.HasValue)
+                            {
+                                @if (product.IsExpired)
+                                {
+                                    <span class="ms-badge ms-badge-danger">Expired</span>
+                                }
+                                else if (product.IsExpiringSoon)
+                                {
+                                    <span class="ms-badge ms-badge-warning">
+                                        @product.ExpiryDate.Value.ToString("MMM dd, yyyy")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="font-size:13px;color:var(--slate-500);">
+                                        @product.ExpiryDate.Value.ToString("MMM dd, yyyy")
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span style="color:var(--slate-400);">—</span>
+                            }
+                        </td>
+                        <td>
+                            @switch (product.Status)
+                            {
+                                case Simplified.Medistock.Models.Enums.ProductStatus.Active:
+                                    <span class="ms-badge ms-badge-success">Active</span>
+                                    break;
+                                case Simplified.Medistock.Models.Enums.ProductStatus.Inactive:
+                                    <span class="ms-badge ms-badge-muted">Inactive</span>
+                                    break;
+                                case Simplified.Medistock.Models.Enums.ProductStatus.OutOfStock:
+                                    <span class="ms-badge ms-badge-warning">Out of Stock</span>
+                                    break;
+                                case Simplified.Medistock.Models.Enums.ProductStatus.Discontinued:
+                                    <span class="ms-badge ms-badge-danger">Discontinued</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                <a asp-action="Details" asp-route-id="@product.Id"
+                                   class="ms-btn ms-btn-secondary ms-btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@product.Id"
+                                   class="ms-btn ms-btn-secondary ms-btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="ms-btn ms-btn-danger ms-btn-sm"
+                                        onclick="confirmDelete(@product.Id, '@product.Name')">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;border:1px solid var(--slate-100);">
+            <div class="modal-header" style="border-bottom:1px solid var(--slate-100);">
+                <h5 class="modal-title" style="font-size:15px;font-weight:600;color:var(--slate-800);">
+                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="color:var(--slate-600);font-size:14px;">
+                Are you sure you want to delete <strong id="productName" style="color:var(--slate-800);"></strong>?
+                This cannot be undone.
+            </div>
+            <div class="modal-footer" style="border-top:1px solid var(--slate-100);gap:8px;">
+                <button type="button" class="ms-btn ms-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="ms-btn ms-btn-danger">
+                        <i class="bi bi-trash3"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            document.getElementById('productName').textContent = name;
+            document.getElementById('deleteForm').action = '/Products/Delete/' + id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}

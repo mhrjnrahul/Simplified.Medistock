@@ -1,0 +1,142 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.SupplierViewModel>
+
+@{
+    ViewData["Title"] = "Suppliers";
+}
+
+<!-- Page Header -->
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Suppliers</h1>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> New Supplier
+    </a>
+</div>
+
+<!-- Table -->
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Products</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="12" style="text-align:center; color:var(--slate-400); padding:48px;">
+                        <i class="bi bi-tags" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No suppliers found. Add one.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var supplier in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="ms-cell-primary">
+                                @supplier.Name
+                            </div>
+                        </td>
+                        <td style="color:var(--slate-500)">
+                            @(supplier.ContactPerson ?? "—")
+                        </td>
+
+                        <td class="ms-cell-meta">
+                            @supplier.Email
+                        </td>
+                        <td class="ms-cell-meta">
+                            @supplier.Phone
+                        </td>
+                        
+                        <td>
+                            <span class="ms-badge ms-badge-muted">
+                                @supplier.ProductCount product@(supplier.ProductCount == 1 ? "" : "s")
+                            </span>
+                        </td>
+                        <td>
+                            @if (supplier.Status == Simplified.Medistock.Models.Enums.SupplierStatus.Active)
+                            {
+                                <span class="ms-badge ms-badge-success">Active</span>
+                            }
+                            else if (supplier.Status == Simplified.Medistock.Models.Enums.SupplierStatus.Inactive)
+                            {
+                                <span class="ms-badge ms-badge-muted">Inactive</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-warning">Blacklisted</span>
+                            }
+                        </td>
+ 
+                       
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                <a asp-action="Details" asp-route-id="@supplier.Id"
+                                   class="ms-btn ms-btn-secondary ms-btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@supplier.Id"
+                                   class="ms-btn ms-btn-secondary ms-btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="ms-btn ms-btn-danger ms-btn-sm"
+                                        onclick="confirmDelete(@supplier.Id, '@supplier.Name')">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;border:1px solid var(--slate-100);">
+                <div class="modal-header" style="border-bottom:1px solid var(--slate-100);">
+                    <h5 class="modal-title" style="font-size:15px;font-weight:600;color:var(--slate-800);">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="color:var(--slate-600);font-size:14px;">
+                    Are you sure you want to delete <strong id="supplierName" style="color:var(--slate-800);"></strong>?
+                    This cannot be undone.
+                </div>
+                <div class="modal-footer" style="border-top:1px solid var(--slate-100);gap:8px;">
+                    <button type="button" class="ms-btn ms-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="ms-btn ms-btn-danger">
+                            <i class="bi bi-trash3"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            document.getElementById('supplierName').textContent = name;
+            document.getElementById('deleteForm').action = '/Suppliers/Delete/' + id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}

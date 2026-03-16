@@ -1,0 +1,136 @@
+﻿@model Simplified.Medistock.Models.ViewModels.StockReportViewModel
+@{
+    ViewData["Title"] = "Stock Report";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Stock Report</h1>
+        <p class="ms-page-subtitle">Current inventory status</p>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<!-- Summary Cards -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px;">
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Total Products</p>
+            <p style="font-size:26px;font-weight:700;color:var(--slate-800);margin:0;">@Model.TotalProducts</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Low Stock</p>
+            <p style="font-size:26px;font-weight:700;color:#d97706;margin:0;">@Model.LowStockCount</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Out of Stock</p>
+            <p style="font-size:26px;font-weight:700;color:#dc2626;margin:0;">@Model.OutOfStockCount</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Expiring Soon</p>
+            <p style="font-size:26px;font-weight:700;color:#d97706;margin:0;">@Model.ExpiringSoonCount</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Expired</p>
+            <p style="font-size:26px;font-weight:700;color:#dc2626;margin:0;">@Model.ExpiredCount</p>
+        </div>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="ms-card">
+    <div class="ms-card-header">
+        <h2 class="ms-card-title">All Products (@Model.TotalProducts)</h2>
+    </div>
+    <div class="ms-card-body" style="padding:0;">
+        <table class="ms-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Supplier</th>
+                    <th>In Stock</th>
+                    <th>Reorder At</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td><div class="ms-cell-primary">@product.Name</div></td>
+                        <td class="ms-cell-meta">@product.SKU</td>
+                        <td class="ms-cell-meta">@product.CategoryName</td>
+                        <td class="ms-cell-meta">@(product.SupplierName ?? "—")</td>
+                        <td>
+                            @if (product.Quantity == 0)
+                            {
+                                <span class="ms-badge ms-badge-danger">Out of Stock</span>
+                            }
+                            else if (product.Quantity <= product.ReorderLevel)
+                            {
+                                <span class="ms-badge ms-badge-warning">@product.Quantity</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-success">@product.Quantity</span>
+                            }
+                        </td>
+                        <td class="ms-cell-meta">@product.ReorderLevel</td>
+                        <td>
+                            @if (product.ExpiryDate.HasValue)
+                            {
+                                @if (product.ExpiryDate.Value < DateTime.UtcNow)
+                                {
+                                    <span class="ms-badge ms-badge-danger">@product.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                                else if (product.ExpiryDate.Value <= DateTime.UtcNow.AddDays(30))
+                                {
+                                    <span class="ms-badge ms-badge-warning">@product.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span class="ms-badge ms-badge-success">@product.ExpiryDate.Value.ToString("MMM dd, yyyy")</span>
+                                }
+                            }
+                            else
+                            {
+                                <span style="color:var(--slate-400);font-size:13px;">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (product.Status == Simplified.Medistock.Models.Enums.ProductStatus.Active)
+                            {
+                                <span class="ms-badge ms-badge-success">Active</span>
+                            }
+                            else if (product.Status == Simplified.Medistock.Models.Enums.ProductStatus.OutOfStock)
+                            {
+                                <span class="ms-badge ms-badge-danger">Out of Stock</span>
+                            }
+                            else if (product.Status == Simplified.Medistock.Models.Enums.ProductStatus.Discontinued)
+                            {
+                                <span class="ms-badge ms-badge-muted">Discontinued</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-warning">@product.Status</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

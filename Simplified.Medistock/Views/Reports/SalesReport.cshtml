@@ -1,0 +1,129 @@
+﻿@model Simplified.Medistock.Models.ViewModels.SalesReportViewModel
+@{
+    ViewData["Title"] = "Sales Report";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Sales Report</h1>
+        <p class="ms-page-subtitle">@Model.FromDate.ToString("MMM dd, yyyy") — @Model.ToDate.ToString("MMM dd, yyyy")</p>
+    </div>
+    <a asp-action="Index" class="ms-btn ms-btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<!-- Date Filter -->
+<div class="ms-card" style="margin-bottom:24px;">
+    <div class="ms-card-body">
+        <form method="get" asp-action="SalesReport" style="display:flex;align-items:flex-end;gap:16px;">
+            <div>
+                <label class="ms-label">From Date</label>
+                <input type="date" name="fromDate" class="ms-input"
+                       value="@Model.FromDate.ToString("yyyy-MM-dd")" style="width:180px;" />
+            </div>
+            <div>
+                <label class="ms-label">To Date</label>
+                <input type="date" name="toDate" class="ms-input"
+                       value="@Model.ToDate.ToString("yyyy-MM-dd")" style="width:180px;" />
+            </div>
+            <button type="submit" class="ms-btn ms-btn-primary">
+                <i class="bi bi-search"></i> Generate
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Total Sales</p>
+            <p style="font-size:28px;font-weight:700;color:var(--slate-800);margin:0;">@Model.TotalSales</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Total Revenue</p>
+            <p style="font-size:24px;font-weight:700;color:var(--primary);margin:0;">Rs. @Model.TotalRevenue.ToString("N2")</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Total Tax</p>
+            <p style="font-size:24px;font-weight:700;color:var(--slate-800);margin:0;">Rs. @Model.TotalTax.ToString("N2")</p>
+        </div>
+    </div>
+    <div class="ms-card">
+        <div class="ms-card-body">
+            <p style="font-size:12px;color:var(--slate-500);margin:0 0 4px;">Total Discount</p>
+            <p style="font-size:24px;font-weight:700;color:var(--slate-800);margin:0;">Rs. @Model.TotalDiscount.ToString("N2")</p>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Table -->
+<div class="ms-card">
+    <div class="ms-card-header">
+        <h2 class="ms-card-title">Sales (@Model.TotalSales)</h2>
+    </div>
+    <div class="ms-card-body" style="padding:0;">
+        @if (!Model.Sales.Any())
+        {
+            <div style="text-align:center;padding:48px;color:var(--slate-400);">
+                <i class="bi bi-receipt" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                <p style="font-size:13px;margin:0;">No sales found for this date range.</p>
+            </div>
+        }
+        else
+        {
+            <table class="ms-table">
+                <thead>
+                    <tr>
+                        <th>Sale #</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
+                        <th style="text-align:right;">Grand Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sale in Model.Sales)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Sales" asp-action="Details" asp-route-id="@sale.Id"
+                                   style="color:var(--primary);font-weight:600;font-size:13px;">
+                                    @sale.SaleNumber
+                                </a>
+                            </td>
+                            <td class="ms-cell-meta">@sale.SaleDate.ToString("MMM dd, yyyy")</td>
+                            <td style="color:var(--slate-500);">@sale.CustomerName</td>
+                            <td class="ms-cell-meta">@sale.PaymentMethod</td>
+                            <td class="ms-cell-meta">Rs. @sale.TotalTax.ToString("N2")</td>
+                            <td class="ms-cell-meta">Rs. @sale.TotalDiscount.ToString("N2")</td>
+                            <td style="text-align:right;font-weight:600;color:var(--slate-800);">Rs. @sale.GrandTotal.ToString("N2")</td>
+                            <td>
+                                @if (sale.Status == Simplified.Medistock.Models.Enums.SaleStatus.Completed)
+                                {
+                                    <span class="ms-badge ms-badge-success">Completed</span>
+                                }
+                                else if (sale.Status == Simplified.Medistock.Models.Enums.SaleStatus.Pending)
+                                {
+                                    <span class="ms-badge ms-badge-warning">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="ms-badge ms-badge-danger">Cancelled</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

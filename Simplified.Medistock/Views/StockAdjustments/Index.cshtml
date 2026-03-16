@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Simplified.Medistock.Models.ViewModels.StockAdjustmentViewModel>
+
+@{
+    ViewData["Title"] = "Stock Adjustments";
+}
+
+<!-- Page Header -->
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Stock Adjustments</h1>
+    </div>
+    <a asp-action="Create" class="ms-btn ms-btn-primary">
+        <i class="bi bi-plus-lg"></i> New Stock Adjustment
+    </a>
+</div>
+
+
+<!-- Main Table -->
+<div class="ms-table-wrapper">
+    <table class="ms-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Type</th>
+                <th>QtyBefore</th>
+                <th>Adjusted</th>
+                <th>QtyAfter</th>
+                <th>Reason</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="12" style="text-align:center; color:var(--slate-400); padding:48px;">
+                        <i class="bi bi-tags" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        No Stock Adjustments found. Add one.
+                    </td>
+                </tr>
+            }
+
+            else
+            {
+                @foreach (var adjustment in Model)
+                {
+                    <tr>
+                        <td>@adjustment.AdjustmentDate.ToString("MMM dd, yyyy")</td>
+                        <td>@adjustment.ProductName</td>
+                        <td>
+                            @if (adjustment.AdjustmentType == Simplified.Medistock.Models.Enums.AdjustmentType.Addition)
+                            {
+                                <span class="ms-badge ms-badge-success">Addition</span>
+                            }
+                            else
+                            {
+                                <span class="ms-badge ms-badge-danger">Reduction</span>
+                            }
+                        </td>
+                        <td>@adjustment.QuantityBefore</td>
+                        <td>@adjustment.QuantityAdjusted</td>
+                        <td>@adjustment.QuantityAfter</td>
+                        <td>@(adjustment.Reason ?? "—")</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@adjustment.Id"
+                               class="ms-btn ms-btn-secondary ms-btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

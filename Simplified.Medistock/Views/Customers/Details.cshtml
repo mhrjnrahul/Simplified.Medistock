@@ -1,0 +1,108 @@
+﻿@model Simplified.Medistock.Models.ViewModels.CustomerViewModel
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<div class="ms-page-header">
+    <div>
+        <h1 class="ms-page-title">Customer Details</h1>
+        <p class="ms-page-subtitle">Viewing Customer information</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a asp-action="Index" class="ms-btn ms-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-start align-items-center w-full gap-2">
+    <div class="ms-card w-50 h-full">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">
+                @Model.FirstName @Model.LastName
+            </h2>
+            @if (Model.CustomerType == Simplified.Medistock.Models.Enums.CustomerType.VIP)
+            {
+                <span class="ms-badge ms-badge-success">VIP</span>
+            }
+            else if (Model.CustomerType == Simplified.Medistock.Models.Enums.CustomerType.Regular)
+            {
+                <span class="ms-badge ms-badge-muted">Regular</span>
+            }
+            else if (Model.CustomerType == Simplified.Medistock.Models.Enums.CustomerType.Wholesale)
+            {
+                <span class="ms-badge ms-badge-warning">Wholesale</span>
+            }
+            else
+            {
+                <span class="ms-badge ms-badge-success">Insurance</span>
+            }
+        </div>
+
+
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Email</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@(Model.Email ?? "—")</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Sale Count</td>
+                    <td style="padding:12px 0;">
+                        <span class="ms-badge ms-badge-muted">
+                            @Model.SaleCount sale@(Model.SaleCount == 1 ? "" : "s") 
+                        </span>
+                    </td>
+                </tr>
+
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);">Address</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">
+
+                        @(string.Join(", ", new[] { Model.Address, Model.City }.Where(x => !string.IsNullOrEmpty(x))))
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="ms-card h-full w-50">
+        <div class="ms-card-header">
+            <h2 class="ms-card-title">
+                General Details
+            </h2>
+        </div>
+
+        <div class="ms-card-body">
+            <table style="width:100%;border-collapse:collapse;">
+
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Phone</td>
+                    <td style="padding:12px 0;font-size:14px;color:var(--slate-700);">@Model.Phone</td>
+                </tr>
+
+                <tr style="border-bottom:1px solid var(--slate-100);">
+                    <td style="padding:12px 0;font-size:13px;font-weight:600;color:var(--slate-500);width:140px;">Date of Birth</td>
+                    <td> @(Model.DateOfBirth?.ToString("MMM dd, yyyy") ?? "—")</td>
+                </tr>
+
+                @if (Model.CustomerType == Simplified.Medistock.Models.Enums.CustomerType.Insurance)
+                {
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td ...>Insurance Provider</td>
+                        <td ...>@(Model.InsuranceProvider ?? "—")</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--slate-100);">
+                        <td ...>Insurance Number</td>
+                        <td ...>@(Model.InsuranceNumber ?? "—")</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
